@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet, useColorScheme, Text } from 'react-native';
+import { Dimensions, StyleSheet, useColorScheme, Text } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -9,6 +9,9 @@ import Animated, {
 
 import { ThemedView } from '@/components/ThemedView';
 import { useFonts } from 'expo-font';
+
+const ScreenWidth = Dimensions.get('window').width;
+const ScreenHeight = Dimensions.get('window').height;
 
 const HEADER_HEIGHT = 250;
 
@@ -34,14 +37,14 @@ export default function ParallaxScrollView({
       transform: [
         {
           translateY: interpolate(
-            scrollOffset.value,
+            ScreenHeight,
             [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
             [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
           ),
         },
         {
           scale: interpolate(
-            scrollOffset.value,
+            ScreenWidth,
             [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
             [2, 1, 1]
           ),
@@ -66,7 +69,9 @@ export default function ParallaxScrollView({
             {headerTitle}
           </Text>
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <ThemedView style={styles.content} id='Parallax-Content'>
+          {children}
+        </ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -75,6 +80,8 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: ScreenWidth,
+    height: ScreenHeight,
   },
   header: {
     height: HEADER_HEIGHT,

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, Platform } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { useState, useEffect } from 'react';
 import fetchTrain from '@/scripts/fetchTrain';
 import { useFonts } from 'expo-font';
@@ -7,6 +7,8 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+const ScreenWidth = Dimensions.get('window').width;
+const ScreenHeight = Dimensions.get('window').height;
 interface Xmlns {
   Count: number;
 }
@@ -89,56 +91,54 @@ export default function HomeScreen() {
   // }
 
   return (
-    <View style={styles.main}>
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: '#000000', dark: '#000000' }}
-        headerTitle='RailTracker'
-      >
-        <View style={styles.body}>
-          <View style={styles.section}>
-            <View style={styles.titleContainer}>
-              <Text
-                style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}
-              >
-                {trainData?.response[0].locationName} to{' '}
-                {trainData?.response[0].filterLocationName}
-              </Text>
-            </View>
-            <View style={styles.textContainer}>
-              {trainData?.response[0].trainServices.map((service) => (
-                <View key={service.serviceID} style={styles.serviceContainer}>
-                  <Text
-                    style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}
-                  >
-                    {service.std} {service.etd}
-                  </Text>
-                </View>
-              ))}
-            </View>
+    <View style={styles.main} id='main'>
+      <View style={styles.body} id='body'>
+        <Text style={[styles.title, { fontFamily: 'DotGothic16-Regular' }]}>
+          RAILTRACKER
+        </Text>
+        <View style={styles.section} id='section'>
+          <View style={styles.titleContainer} id='titleContainer1'>
+            <Text style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}>
+              {trainData?.response[0].locationName} to{' '}
+              {trainData?.response[0].filterLocationName}
+            </Text>
           </View>
-          <View style={styles.section}>
-            <View style={styles.titleContainer}>
-              <Text
-                style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}
+          <View style={styles.textContainer} id='textContainer1'>
+            {trainData?.response[0].trainServices.map((service) => (
+              <View
+                key={service.serviceID}
+                style={styles.serviceContainer}
+                id='serviceContainer1'
               >
-                {trainData?.response[1].locationName} to{' '}
-                {trainData?.response[1].filterLocationName}
-              </Text>
-            </View>
-            <View style={styles.textContainer}>
-              {trainData?.response[1].trainServices.map((service) => (
-                <View key={service.serviceID} style={styles.serviceContainer}>
-                  <Text
-                    style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}
-                  >
-                    {service.std} {service.etd}
-                  </Text>
-                </View>
-              ))}
-            </View>
+                <Text
+                  style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}
+                >
+                  {service.std} {service.etd}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
-      </ParallaxScrollView>
+        <View style={styles.section}>
+          <View style={styles.titleContainer}>
+            <Text style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}>
+              {trainData?.response[1].locationName} to{' '}
+              {trainData?.response[1].filterLocationName}
+            </Text>
+          </View>
+          <View style={styles.textContainer}>
+            {trainData?.response[1].trainServices.map((service) => (
+              <View key={service.serviceID} style={styles.serviceContainer}>
+                <Text
+                  style={[styles.text, { fontFamily: 'DotGothic16-Regular' }]}
+                >
+                  {service.std} {service.etd}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
@@ -146,12 +146,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   main: {
     display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
     flex: 1,
     backgroundColor: 'black',
     color: 'yellow',
-    width: '100%',
-    height: 'max-content',
+    width: ScreenWidth,
+    height: ScreenHeight,
   },
   body: {
     backgroundColor: 'black',
@@ -161,8 +162,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexGrow: 1,
     flex: 1,
-    width: '100%',
-    height: '100%',
+  },
+  title: {
+    display: 'flex',
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'yellow',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   section: {
     display: 'flex',
