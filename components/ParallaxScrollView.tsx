@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { StyleSheet, useColorScheme, Text } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -8,22 +8,26 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ThemedView } from '@/components/ThemedView';
+import { useFonts } from 'expo-font';
 
 const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
   headerBackgroundColor: { dark: string; light: string };
+  headerTitle: string;
 }>;
 
 export default function ParallaxScrollView({
   children,
-  headerImage,
   headerBackgroundColor,
+  headerTitle, // Add headerTitle here
 }: Props) {
   const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
+  const [fontsLoaded, fontError] = useFonts({
+    'DotGothic16-Regular': require('../assets/fonts/DotGothic16-Regular.ttf'),
+  });
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -36,7 +40,11 @@ export default function ParallaxScrollView({
           ),
         },
         {
-          scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
+          scale: interpolate(
+            scrollOffset.value,
+            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+            [2, 1, 1]
+          ),
         },
       ],
     };
@@ -50,8 +58,13 @@ export default function ParallaxScrollView({
             styles.header,
             { backgroundColor: headerBackgroundColor[colorScheme] },
             headerAnimatedStyle,
-          ]}>
-          {headerImage}
+          ]}
+        >
+          <Text
+            style={[styles.headerTitle, { fontFamily: 'DotGothic16-Regular' }]}
+          >
+            {headerTitle}
+          </Text>
         </Animated.View>
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
@@ -64,13 +77,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 250,
-    overflow: 'hidden',
+    height: HEADER_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: 'yellow',
   },
   content: {
     flex: 1,
-    padding: 32,
-    gap: 16,
-    overflow: 'hidden',
   },
 });
