@@ -1,8 +1,7 @@
-export default async function fetchTrain() {
+export default async function fetchTrain(origin, destination) {
   try {
-    console.log(process.env.EXPO_PUBLIC_APIKEY);
     const response1 = await fetch(
-      `https://api1.raildata.org.uk/1010-live-departure-board-dep/LDBWS/api/20220120/GetDepBoardWithDetails/${process.env.EXPO_PUBLIC_ORIGIN}?filterCRS=${process.env.EXPO_PUBLIC_DEST}`,
+      `https://api1.raildata.org.uk/1010-live-departure-board-dep/LDBWS/api/20220120/GetDepBoardWithDetails/${origin}?filterCRS=${destination}`,
       {
         headers: {
           'x-apikey': process.env.EXPO_PUBLIC_APIKEY,
@@ -10,7 +9,7 @@ export default async function fetchTrain() {
       }
     );
     const response2 = await fetch(
-      `https://api1.raildata.org.uk/1010-live-departure-board-dep/LDBWS/api/20220120/GetDepBoardWithDetails/${process.env.EXPO_PUBLIC_DEST}?filterCRS=${process.env.EXPO_PUBLIC_ORIGIN}`,
+      `https://api1.raildata.org.uk/1010-live-departure-board-dep/LDBWS/api/20220120/GetDepBoardWithDetails/${destination}?filterCRS=${origin}`,
       {
         headers: {
           'x-apikey': process.env.EXPO_PUBLIC_APIKEY,
