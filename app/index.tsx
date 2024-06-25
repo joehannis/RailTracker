@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
     alignItems: 'center',
+    marginTop: 24,
   },
   title: {
     fontSize: 28,

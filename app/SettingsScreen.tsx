@@ -34,8 +34,8 @@ const SettingsScreen: React.FC<Props> = ({ setSettings, setUpdate }) => {
   });
 
   const onSubmit = (data: Settings) => {
-    storage.set('origin', data.origin);
-    storage.set('destination', data.destination);
+    storage.set('origin', data.origin.toUpperCase());
+    storage.set('destination', data.destination.toUpperCase());
     setUpdate(true);
     setSettings('false');
   };
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     color: 'yellow',
     width: ScreenWidth,
     height: ScreenHeight,
+    marginTop: 24,
   },
 
   title: {
