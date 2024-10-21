@@ -1,6 +1,6 @@
-# Welcome to your Expo app 👋
+# RailTracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React-Native app so that you never miss your train to the office. Enter CRS codes of your home station and destination station in the settings page to have live updates.
 
 ## Get started
 
