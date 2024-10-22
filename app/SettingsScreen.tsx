@@ -6,9 +6,11 @@ import {
   Button,
   TextInput,
 } from 'react-native';
+import { useState, useRef, useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
 import { storage } from './db/db';
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 
 const ScreenWidth = Dimensions.get('window').width;
 const ScreenHeight = Dimensions.get('window').height;
@@ -26,12 +28,54 @@ interface Props {
 const SettingsScreen: React.FC<Props> = ({ setSettings, setUpdate }) => {
   const navigation = useNavigation();
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [suggestionsList, setSuggestionsList] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const dropdownController = useRef(null);
+
   const { control, handleSubmit } = useForm({
     defaultValues: {
       origin: '',
       destination: '',
     },
   });
+
+  const searchRef = useRef(null);
+
+  const getSuggestions = useCallback(async (q) => {
+    const filterToken = q.toLowerCase();
+    console.log('getSuggestions', q);
+    if (typeof q !== 'string' || q.length < 3) {
+      setSuggestionsList(null);
+      return;
+    }
+    setLoading(true);
+    const headers = new Headers();
+    headers.set('x-apikey', process.env.EXPO_STATION_APIKEY);
+
+    const response = await fetch(
+      `https://api1.raildata.org.uk/1010-knowlegebase-stations-xml-feed1_1/4.0/stations-LE.xml`,
+      {
+        headers: headers,
+      }
+    );
+    const items = await response.json();
+    console.log(items);
+    const suggestions = items
+      .filter((item) => item.title.toLowerCase().includes(filterToken))
+      .map((item) => ({
+        id: item.id,
+        title: item.title,
+      }));
+    setSuggestionsList(suggestions);
+    setLoading(false);
+  }, []);
+
+  const onClearPress = useCallback(() => {
+    setSuggestionsList(null);
+  }, []);
+
+  const onOpenSuggestionsList = useCallback((isOpened) => {}, []);
 
   const onSubmit = (data: Settings) => {
     storage.set('origin', data.origin.toUpperCase());
@@ -52,34 +96,115 @@ const SettingsScreen: React.FC<Props> = ({ setSettings, setUpdate }) => {
         <Text style={[styles.heading, { fontFamily: 'DotGothic16-Regular' }]}>
           Journey Details
         </Text>
-        <Controller
-          control={control}
-          name={'origin'}
-          render={({ field: { value, onChange, onBlur } }) => (
-            <TextInput
-              placeholder='Origin CRS Code'
-              style={[styles.input, { fontFamily: 'DotGothic16-Regular' }]}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-            />
+
+        <AutocompleteDropdown
+          ref={searchRef}
+          controller={(controller) => {
+            dropdownController.current = controller;
+          }}
+          // initialValue={'1'}
+          direction={'down'}
+          dataSet={suggestionsList}
+          onChangeText={getSuggestions}
+          onSelectItem={(item) => {
+            item && setSelectedItem(item.id);
+          }}
+          debounce={600}
+          suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
+          onClear={onClearPress}
+          //  onSubmit={(e) => onSubmitSearch(e.nativeEvent.text)}
+          onOpenSuggestionsList={onOpenSuggestionsList}
+          loading={loading}
+          useFilter={false} // set false to prevent rerender twice
+          textInputProps={{
+            placeholder: 'Type 3+ letters (dolo...)',
+            autoCorrect: false,
+            autoCapitalize: 'none',
+            style: {
+              borderRadius: 25,
+              backgroundColor: '#383b42',
+              color: '#fff',
+              paddingLeft: 18,
+            },
+          }}
+          rightButtonsContainerStyle={{
+            right: 8,
+            height: 30,
+
+            alignSelf: 'center',
+          }}
+          inputContainerStyle={{
+            backgroundColor: '#383b42',
+            borderRadius: 25,
+          }}
+          suggestionsListContainerStyle={{
+            backgroundColor: '#383b42',
+          }}
+          containerStyle={{ flexGrow: 1, flexShrink: 1 }}
+          renderItem={(item, text) => (
+            <Text style={{ color: '#fff', padding: 15 }}>{item.title}</Text>
           )}
+          //   ChevronIconComponent={<Feather name="chevron-down" size={20} color="#fff" />}
+          //   ClearIconComponent={<Feather name="x-circle" size={18} color="#fff" />}
+          inputHeight={50}
+          showChevron={false}
+          closeOnBlur={false}
+          //  showClear={false}
         />
-        <Controller
-          control={control}
-          name={'destination'}
-          render={({ field: { value, onChange, onBlur } }) => (
-            <TextInput
-              placeholder='Destination CRS Code'
-              style={[
-                styles.input,
-                { fontFamily: 'DotGothic</View>16-Regular' },
-              ]}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-            />
+
+        <AutocompleteDropdown
+          ref={searchRef}
+          controller={(controller) => {
+            dropdownController.current = controller;
+          }}
+          // initialValue={'1'}
+          direction={'down'}
+          dataSet={suggestionsList}
+          onChangeText={getSuggestions}
+          onSelectItem={(item) => {
+            item && setSelectedItem(item.id);
+          }}
+          debounce={600}
+          suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
+          onClear={onClearPress}
+          //  onSubmit={(e) => onSubmitSearch(e.nativeEvent.text)}
+          onOpenSuggestionsList={onOpenSuggestionsList}
+          loading={loading}
+          useFilter={false} // set false to prevent rerender twice
+          textInputProps={{
+            placeholder: 'Type 3+ letters (dolo...)',
+            autoCorrect: false,
+            autoCapitalize: 'none',
+            style: {
+              borderRadius: 25,
+              backgroundColor: '#383b42',
+              color: '#fff',
+              paddingLeft: 18,
+            },
+          }}
+          rightButtonsContainerStyle={{
+            right: 8,
+            height: 30,
+
+            alignSelf: 'center',
+          }}
+          inputContainerStyle={{
+            backgroundColor: '#383b42',
+            borderRadius: 25,
+          }}
+          suggestionsListContainerStyle={{
+            backgroundColor: '#383b42',
+          }}
+          containerStyle={{ flexGrow: 1, flexShrink: 1 }}
+          renderItem={(item, text) => (
+            <Text style={{ color: '#fff', padding: 15 }}>{item.title}</Text>
           )}
+          //   ChevronIconComponent={<Feather name="chevron-down" size={20} color="#fff" />}
+          //   ClearIconComponent={<Feather name="x-circle" size={18} color="#fff" />}
+          inputHeight={50}
+          showChevron={false}
+          closeOnBlur={false}
+          //  showClear={false}
         />
 
         <Button title='Submit' onPress={handleSubmit(onSubmit)} />
