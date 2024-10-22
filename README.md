@@ -1,6 +1,8 @@
 # RailTracker
 
 A React-Native app so that you never miss your train to the office. Enter CRS codes of your home station and destination station in the settings page to have live updates. Requires an API key for https://raildata.org.uk/
+![app screenshot](https://github.com/joehannis/RailTracker/blob/main/app-screenshot.png)
+
 
 ## Get started
 
